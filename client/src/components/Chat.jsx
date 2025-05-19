@@ -35,11 +35,11 @@ export function Chat() {
 
     setMessages((prev) => [...prev, newUserMessage])
 
-    // Show typing indicator
     setIsTyping(true)
+    const base = import.meta.env.VITE_BASE_URL;;
 
-    // ===== INTEGRATE YOUR BACKEND API HERE =====
-    fetch('http://localhost:5000/api/chat', {
+
+    fetch(`${base}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,17 +52,14 @@ export function Chat() {
         }
         const data = await res.json()
 
-        // Hide typing indicator
         setIsTyping(false)
 
-        // Update previous message status to delivered
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === newUserMessage.id ? { ...msg, status: 'delivered' } : msg
           )
         )
 
-        // Add bot response from API
         const botResponse = {
           id: (Date.now() + 1).toString(),
           content: data.reply || 'No response received.',
@@ -73,7 +70,6 @@ export function Chat() {
 
         setMessages((prev) => [...prev, botResponse])
 
-        // Optional: mark user message as read
         setTimeout(() => {
           setMessages((prev) =>
             prev.map((msg) =>
